@@ -20,57 +20,32 @@ function teacherLogin() {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('teacherPanel').style.display = 'block';
         document.getElementById('sidebar').style.display = 'block';
-        showSection('classSection');
         updateClassSelect();
     } else {
         loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
     }
 }
 
-// Sınıf Seçimlerini Güncelleme
-function updateClassSelect() {
-    const classSelect = document.getElementById('classSelect');
-    const attendanceClassSelect = document.getElementById('attendanceClassSelect');
-    classSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
-    attendanceClassSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
-
-    classes.forEach(cls => {
-        classSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
-        attendanceClassSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
-    });
-}
-
-// Formları Göster
+// Bölümler Arasında Geçiş
 function showSection(sectionId) {
-    // Tüm form bölümlerini gizle
     const sections = document.querySelectorAll('.form-section');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-
-    // Seçilen bölümü göster
-    const selectedSection = document.getElementById(sectionId);
-    if (selectedSection) {
-        selectedSection.style.display = 'block';
-    }
+    sections.forEach(section => section.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
 }
 
-// Sınıf Oluştur
+// Sınıf Oluşturma
 function createClass() {
     const className = document.getElementById('className').value;
-    if (!className) {
-        alert("Sınıf adı giriniz!");
-        return;
+    if (className) {
+        const newClass = { id: Date.now(), name: className, students: [] };
+        classes.push(newClass);
+        localStorage.setItem('classes', JSON.stringify(classes));
+        alert(`${className} sınıfı başarıyla oluşturuldu.`);
+        document.getElementById('className').value = '';
+        updateClassSelect();
+    } else {
+        alert("Sınıf adı girmelisiniz.");
     }
-
-    const classId = classes.length ? classes[classes.length - 1].id + 1 : 1;
-    const newClass = { id: classId, name: className, students: [] };
-
-    classes.push(newClass);
-    localStorage.setItem('classes', JSON.stringify(classes));
-    updateClassSelect();
-    alert("Sınıf oluşturuldu!");
-    document.getElementById('className').value = '';
 }
 
 // Öğrenci Ekleme
@@ -78,24 +53,20 @@ function addStudent() {
     const studentName = document.getElementById('studentName').value;
     const classId = document.getElementById('classSelect').value;
 
-    if (!studentName || !classId) {
-        alert("Lütfen öğrenci adı ve sınıf seçiniz!");
-        return;
+    if (studentName && classId) {
+        const student = { id: Date.now(), name: studentName };
+        students.push(student);
+        localStorage.setItem('students', JSON.stringify(students));
+
+        const selectedClass = classes.find(c => c.id === Number(classId));
+        selectedClass.students.push(student.id);
+        localStorage.setItem('classes', JSON.stringify(classes));
+
+        alert(`${studentName} başarıyla eklendi.`);
+        document.getElementById('studentName').value = '';
+    } else {
+        alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
     }
-
-    const studentId = students.length ? students[students.length - 1].id + 1 : 1;
-    const newStudent = { id: studentId, name: studentName, classId: classId };
-
-    students.push(newStudent);
-    localStorage.setItem('students', JSON.stringify(students));
-
-    const selectedClass = classes.find(cls => cls.id == classId);
-    selectedClass.students.push(newStudent);
-    localStorage.setItem('classes', JSON.stringify(classes));
-
-    alert("Öğrenci eklendi!");
-    document.getElementById('studentName').value = '';
-    updateClassSelect();
 }
 
 // Öğrencileri Listeleme
@@ -103,15 +74,18 @@ function listStudents() {
     const studentList = document.getElementById('studentList');
     studentList.innerHTML = '';
 
-    students.forEach(student => {
-        const studentItem = document.createElement('li');
-        studentItem.textContent = `${student.name} (Sınıf: ${classes.find(cls => cls.id === student.classId)?.name})`;
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Sil';
-        deleteButton.onclick = () => deleteStudent(student.id);
-        studentItem.appendChild(deleteButton);
-        studentList.appendChild(studentItem);
-    });
+    if (students.length > 0) {
+        students.forEach(student => {
+            const studentItem = document.createElement('li');
+            studentItem.innerHTML = `
+                ${student.name} 
+                <button onclick="deleteStudent(${student.id})">Sil</button>
+            `;
+            studentList.appendChild(studentItem);
+        });
+    } else {
+        studentList.innerHTML = '<p>Henüz öğrenci eklenmedi.</p>';
+    }
 }
 
 // Öğrenci Silme
@@ -120,15 +94,15 @@ function deleteStudent(studentId) {
     localStorage.setItem('students', JSON.stringify(students));
 
     classes.forEach(cls => {
-        cls.students = cls.students.filter(s => s.id !== studentId);
+        cls.students = cls.students.filter(id => id !== studentId);
     });
     localStorage.setItem('classes', JSON.stringify(classes));
 
-    alert("Öğrenci silindi!");
-    listStudents(); // Listeyi güncelle
+    alert('Öğrenci silindi.');
+    listStudents();
 }
 
-// Yoklama Al
+// Yoklama Listesini Yükle
 function loadStudentsForAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
     const attendanceList = document.getElementById('attendanceList');
@@ -136,34 +110,53 @@ function loadStudentsForAttendance() {
 
     if (!classId) return;
 
-    const selectedClass = classes.find(cls => cls.id === Number(classId));
-    if (selectedClass) {
-        selectedClass.students.forEach(student => {
-            const li = document.createElement('li');
-            li.innerHTML = `<label><input type="checkbox" id="attendance-${student.id}"> ${student.name}</label>`;
-            attendanceList.appendChild(li);
+    const selectedClass = classes.find(cls => cls.id == classId);
+    if (selectedClass && selectedClass.students.length > 0) {
+        selectedClass.students.forEach(studentId => {
+            const student = students.find(s => s.id === studentId);
+            if (student) {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <label>
+                        <input type="checkbox" id="attendance-${student.id}">
+                        ${student.name}
+                    </label>`;
+                attendanceList.appendChild(li);
+            }
         });
+    } else {
+        attendanceList.innerHTML = '<p>Bu sınıfta öğrenci bulunmamaktadır.</p>';
     }
 }
 
 // Yoklama Kaydet
 function takeAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
-    const selectedClass = classes.find(cls => cls.id === Number(classId));
+    const selectedClass = classes.find(cls => cls.id == classId);
     const attendance = [];
 
-    if (selectedClass) {
-        selectedClass.students.forEach(student => {
-            const checkbox = document.getElementById(`attendance-${student.id}`);
-            const isPresent = checkbox && checkbox.checked;
-            attendance.push({ studentId: student.id, isPresent });
+    if (selectedClass && selectedClass.students.length > 0) {
+        selectedClass.students.forEach(studentId => {
+            const checkbox = document.getElementById(`attendance-${studentId}`);
+            const isPresent = checkbox ? checkbox.checked : false;
+            attendance.push({
+                studentId: studentId,
+                isPresent: isPresent
+            });
         });
 
         const date = new Date().toLocaleDateString();
-        attendanceRecords.push({ classId, date, attendance });
-        localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+        const record = {
+            classId: classId,
+            date: date,
+            attendance: attendance
+        };
 
-        alert('Yoklama başarıyla alındı.');
+        attendanceRecords.push(record);
+        localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+        alert('Yoklama başarıyla kaydedildi.');
+    } else {
+        alert('Bu sınıfta öğrenci bulunmamaktadır veya seçim yapılmamıştır.');
     }
 }
 
@@ -174,16 +167,34 @@ function showAttendanceReports() {
 
     if (attendanceRecords.length > 0) {
         attendanceRecords.forEach(record => {
-            const reportItem = `<h3>${record.date} - Sınıf: ${classes.find(cls => cls.id === Number(record.classId))?.name}</h3>`;
-            record.attendance.forEach(attendance => {
-                const student = students.find(s => s.id === attendance.studentId);
-                const status = attendance.isPresent ? 'Gelmiş' : 'Gelmemiş';
-                attendanceReportsList.innerHTML += `
-                    <p>${student?.name || 'Bilinmiyor'}: ${status}</p>
-                `;
+            const className = classes.find(cls => cls.id == record.classId)?.name || 'Bilinmiyor';
+            const reportHeader = document.createElement('h3');
+            reportHeader.textContent = `${record.date} - Sınıf: ${className}`;
+            attendanceReportsList.appendChild(reportHeader);
+
+            record.attendance.forEach(att => {
+                const student = students.find(s => s.id === att.studentId);
+                if (student) {
+                    const reportItem = document.createElement('p');
+                    reportItem.textContent = `${student.name}: ${att.isPresent ? 'Gelmiş' : 'Gelmemiş'}`;
+                    attendanceReportsList.appendChild(reportItem);
+                }
             });
         });
     } else {
         attendanceReportsList.innerHTML = '<p>Henüz yoklama kaydı bulunmamaktadır.</p>';
     }
+}
+
+// Sınıfları Güncelle
+function updateClassSelect() {
+    const classSelect = document.getElementById('classSelect');
+    const attendanceClassSelect = document.getElementById('attendanceClassSelect');
+    classSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
+    attendanceClassSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
+
+    classes.forEach(cls => {
+        classSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+        attendanceClassSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+    });
 }
