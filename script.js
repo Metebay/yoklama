@@ -69,6 +69,42 @@ function addStudent() {
     }
 }
 
+// Öğrencileri Listele
+function listStudents() {
+    const studentList = document.getElementById('studentList');
+    studentList.innerHTML = '';
+
+    if (students.length > 0) {
+        students.forEach(student => {
+            const selectedClass = classes.find(c => c.id === Number(student.classId));
+            const listItem = `
+                <li>
+                    ${student.name} - ${selectedClass ? selectedClass.name : 'Bilinmiyor'}
+                    <button onclick="deleteStudent(${student.id})">Sil</button>
+                </li>
+            `;
+            studentList.innerHTML += listItem;
+        });
+    } else {
+        studentList.innerHTML = '<p>Öğrenci bulunmamaktadır.</p>';
+    }
+}
+
+// Öğrenci Silme
+function deleteStudent(studentId) {
+    students = students.filter(student => student.id !== studentId);
+    localStorage.setItem('students', JSON.stringify(students));
+
+    // Silinen öğrencinin ait olduğu sınıftan da kaldırma
+    classes.forEach(cls => {
+        cls.students = cls.students.filter(student => student.id !== studentId);
+    });
+    localStorage.setItem('classes', JSON.stringify(classes));
+
+    alert('Öğrenci başarıyla silindi.');
+    listStudents();  // Güncel listeyi tekrar göster
+}
+
 // Sınıf ve Öğrenci Seçimlerini Güncelleme
 function updateClassSelect() {
     const classSelect = document.getElementById('classSelect');
@@ -77,79 +113,13 @@ function updateClassSelect() {
     attendanceClassSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
 
     classes.forEach(cls => {
-        const option = `<option value="${cls.id}">${cls.name}</option>`;
-        classSelect.innerHTML += option;
-        attendanceClassSelect.innerHTML += option;
+        classSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+        attendanceClassSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
     });
 }
 
-// Yoklama Al
-function loadStudentsForAttendance() {
-    const classId = document.getElementById('attendanceClassSelect').value;
-    const attendanceList = document.getElementById('attendanceList');
-    attendanceList.innerHTML = '';
-
-    if (classId) {
-        const selectedClass = classes.find(c => c.id === Number(classId));
-        selectedClass.students.forEach(student => {
-            const listItem = `
-                <li>
-                    <input type="checkbox" data-id="${student.id}" id="student-${student.id}">
-                    <label for="student-${student.id}">${student.name}</label>
-                </li>
-            `;
-            attendanceList.innerHTML += listItem;
-        });
-    }
-}
-
-function takeAttendance() {
-    const classId = document.getElementById('attendanceClassSelect').value;
-    if (classId) {
-        const attendanceList = document.querySelectorAll('#attendanceList li input');
-        const attendanceRecord = {
-            classId: Number(classId),
-            date: new Date().toLocaleDateString(),
-            records: []
-        };
-
-        attendanceList.forEach(input => {
-            attendanceRecord.records.push({
-                studentId: Number(input.dataset.id),
-                status: input.checked
-            });
-        });
-
-        attendanceRecords.push(attendanceRecord);
-        localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
-        alert("Yoklama başarıyla alındı.");
-    } else {
-        alert("Lütfen bir sınıf seçin.");
-    }
-}
-
-// Yoklama Raporlarını Göster
-function showAttendanceReports() {
-    const attendanceReportsList = document.getElementById('attendanceReportsList');
-    attendanceReportsList.innerHTML = ''; // Önceki raporları temizle
-
-    if (attendanceRecords.length > 0) {
-        attendanceRecords.forEach(record => {
-            const selectedClass = classes.find(c => c.id === record.classId);
-            const report = `
-                <div>
-                    <h3>${selectedClass.name} (${record.date})</h3>
-                    <ul>
-                        ${record.records.map(r => {
-                            const student = students.find(s => s.id === r.studentId);
-                            return `<li>${student.name}: ${r.status ? 'Var' : 'Yok'}</li>`;
-                        }).join('')}
-                    </ul>
-                </div>
-            `;
-            attendanceReportsList.innerHTML += report;
-        });
-    } else {
-        attendanceReportsList.innerHTML = '<p>Henüz yoklama kaydı bulunmamaktadır.</p>';
-    }
+// Öğrenci Listesini Göster
+function showStudents() {
+    listStudents();
+    showSection('listStudents');
 }
