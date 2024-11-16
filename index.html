@@ -3,38 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metin Dosyasına Veri Kaydetme</title>
+    <title>Veri Kaydetme</title>
 </head>
 <body>
-    <h1>Metin Dosyasına Veri Kaydetme</h1>
+    <h1>Veri Girin ve Kaydedin</h1>
     <form id="veriForm">
-        <label for="veriInput">Metin Girin:</label>
-        <input type="text" id="veriInput" name="veriInput" required>
-        <button type="submit">Kaydet ve İndir</button>
+        <label for="veriInput">Veri Girin:</label>
+        <textarea id="veriInput" name="veriInput" rows="4" cols="50" required></textarea>
+        <br>
+        <button type="submit">Kaydet</button>
     </form>
 
+    <p id="sonucMesaji"></p>
+
     <script>
-        // Formu ve veri girişini seçiyoruz
+        // Formu seçiyoruz
         const form = document.getElementById('veriForm');
         const veriInput = document.getElementById('veriInput');
+        const sonucMesaji = document.getElementById('sonucMesaji');
 
-        // Formun gönderilmesi
-        form.addEventListener('submit', function(event) {
+        // Form gönderildiğinde
+        form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            // Giriş kutusundaki veriyi alıyoruz
             const veri = veriInput.value;
 
-            // Blob oluşturuyoruz
-            const blob = new Blob([veri], { type: 'text/plain' });
+            // Veriyi sunucuya gönderiyoruz
+            try {
+                const response = await fetch('http://localhost:3000/save-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: veri })
+                });
 
-            // Dosyayı indirilebilir hale getiriyoruz
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'kaydedilen_veri.txt'; // Dosya adı
-            link.click();  // İndirme işlemini başlat
+                const result = await response.json();
 
-            veriInput.value = '';  // Giriş kutusunu temizliyoruz
+                if (response.ok) {
+                    sonucMesaji.textContent = result.message;
+                    veriInput.value = '';  // Giriş kutusunu temizle
+                } else {
+                    sonucMesaji.textContent = 'Bir hata oluştu: ' + result.message;
+                }
+            } catch (error) {
+                sonucMesaji.textContent = 'Sunucuya bağlanırken bir hata oluştu.';
+            }
         });
     </script>
 </body>
