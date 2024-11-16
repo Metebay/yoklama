@@ -34,7 +34,7 @@
             </div>
 
             <!-- Öğretmen Paneli -->
-            <div id="teacherPanel">
+            <div id="teacherPanel" style="display: none;">
                 <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
                 
                 <div id="classSection" class="form-section">
@@ -66,9 +66,7 @@
 
                 <div id="attendanceReports" class="form-section">
                     <h2>Yoklama Kayıtları</h2>
-                    <div id="attendanceReportsList">
-                        <!-- Raporlar burada görünecek -->
-                    </div>
+                    <div id="attendanceReportsList"></div>
                 </div>
 
                 <div id="scoreSection" class="form-section">
@@ -77,10 +75,9 @@
                     <button onclick="addStudentScore()">Puan Ekle</button>
                 </div>
 
-                <!-- Öğrencileri Listele -->
                 <div id="listStudents" class="form-section">
                     <h2>Öğrencileri Listele</h2>
-                    <ul id="studentList"></ul> <!-- Öğrenciler burada listelenecek -->
+                    <ul id="studentList"></ul>
                 </div>
             </div>
         </div>
