@@ -1,61 +1,91 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okul Yönetim Sistemi</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Öğrenci Kayıt Sistemi</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="wrapper">
-        <!-- Üst Menü (Sekmeler) -->
-        <div class="tabs">
-            <button class="tab-button" onclick="showSection('classSection')">Sınıf Oluştur</button>
-            <button class="tab-button" onclick="showSection('studentSection')">Öğrenci Ekle</button>
-            <button class="tab-button" onclick="showSection('studentListSection')">Öğrencileri Listele</button>
-            <button class="tab-button" onclick="showSection('attendanceSection')">Yoklama Al</button>
-            <button class="tab-button" onclick="showSection('attendanceReports')">Yoklama Raporları</button>
-        </div>
+  <!-- Login Paneli -->
+  <div id="loginPanel" class="section active">
+    <h2>Öğretmen Girişi</h2>
+    <form id="loginForm">
+      <label for="username">Kullanıcı Adı:</label>
+      <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+      <label for="password">Şifre:</label>
+      <input type="password" id="password" placeholder="Şifre" required>
+      <button type="submit">Giriş Yap</button>
+    </form>
+  </div>
 
-        <!-- İçerik Alanı -->
-        <div class="content">
-            <!-- Bölümler -->
-            <div id="classSection" class="form-section">
-                <h2>Sınıf Oluştur</h2>
-                <label for="className">Sınıf Adı:</label>
-                <input type="text" id="className" placeholder="Sınıf adı girin">
-                <button onclick="createClass()">Sınıf Oluştur</button>
-            </div>
-
-            <div id="studentSection" class="form-section">
-                <h2>Öğrenci Ekle</h2>
-                <label for="studentName">Öğrenci Adı:</label>
-                <input type="text" id="studentName" placeholder="Öğrenci adı girin">
-                <label for="classSelect">Sınıf Seçin:</label>
-                <select id="classSelect"></select>
-                <button onclick="addStudent()">Öğrenci Ekle</button>
-            </div>
-
-            <div id="studentListSection" class="form-section">
-                <h2>Öğrencileri Listele</h2>
-                <ul id="studentList"></ul>
-            </div>
-
-            <div id="attendanceSection" class="form-section">
-                <h2>Yoklama Al</h2>
-                <label for="attendanceClassSelect">Sınıf Seçin:</label>
-                <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()"></select>
-                <ul id="attendanceList"></ul>
-                <button onclick="takeAttendance()">Yoklama Al</button>
-            </div>
-
-            <div id="attendanceReports" class="form-section">
-                <h2>Yoklama Raporları</h2>
-                <div id="attendanceReportsList"></div>
-            </div>
-        </div>
+  <!-- Ana İçerik Paneli -->
+  <div class="container" id="mainContent" style="display: none;">
+    <div class="sidebar">
+      <div class="profile">
+        <div class="profile-icon">👤</div>
+        <h2>AHMET CAN</h2>
+        <p>BEDEN EĞİT. ÖĞR.</p>
+      </div>
+      <nav class="menu">
+        <button onclick="showSection('register')">ÖĞRENCİ KAYIT</button>
+        <button onclick="showSection('classList')">SINIFLAR</button>
+        <button onclick="showSection('attendance')">YOKLAMA</button>
+        <button onclick="logout()">ÇIKIŞ</button>
+      </nav>
+      <div class="logo">
+        <h1>LOGO</h1>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="content">
+      <!-- Öğrenci Kayıt Formu -->
+      <div id="register" class="section">
+        <h2>Öğrenci Kayıt</h2>
+        <form id="studentForm">
+          <label for="studentName">Ad-Soyad:</label>
+          <input type="text" id="studentName" placeholder="Ad-Soyad" required>
+          <label for="studentClass">Sınıf:</label>
+          <input type="text" id="studentClass" placeholder="Sınıf" required>
+          <button type="submit">Kaydet</button>
+        </form>
+      </div>
+
+      <!-- Sınıf Listesi -->
+      <div id="classList" class="section">
+        <h2>Sınıflar</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>NO</th>
+              <th>AD-SOYAD</th>
+              <th>SINIF</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <!-- Öğrenciler burada listelenecek -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Yoklama -->
+      <div id="attendance" class="section">
+        <h2>Yoklama</h2>
+        <form id="attendanceForm">
+          <label for="attendanceClass">Sınıf Seç:</label>
+          <select id="attendanceClass" required>
+            <!-- Sınıflar burada listelenecek -->
+          </select>
+          <button type="submit">Yoklama Al</button>
+        </form>
+        <div id="attendanceList">
+          <!-- Yoklama sonucu listelenecek -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
