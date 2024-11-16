@@ -1,29 +1,15 @@
 /* Genel Stil */
-:root {
-    --primary-color: #D10000; /* Sivasspor kırmızı */
-    --secondary-color: #E20000; /* Sivasspor kırmızı */
-    --hover-color: #9B0000; /* Sivasspor koyu kırmızı */
-    --button-hover-color: #45a049;
-    --text-color: #333;
-    --background-color: #f4f4f9;
-}
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--background-color);
-}
-
-.wrapper {
-    display: flex;
-    min-height: 100vh;
+    background-color: #f4f4f9;
 }
 
 /* Sidebar */
 #sidebar {
     width: 250px;
-    background-color: var(--primary-color);
+    background-color: #D32F2F; /* Sivasspor Kırmızı */
     color: white;
     padding-top: 30px;
     position: fixed;
@@ -31,6 +17,7 @@ body {
     bottom: 0;
     left: 0;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: none;
 }
 
 #sidebar ul {
@@ -45,44 +32,79 @@ body {
 #sidebar button {
     width: 100%;
     padding: 15px;
-    background-color: var(--secondary-color);
+    background-color: #1976D2; /* Sivasspor Mavi */
     color: white;
     border: none;
     text-align: left;
     font-size: 16px;
     cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 #sidebar button:hover {
-    background-color: var(--hover-color);
+    background-color: #1565C0;
 }
 
-/* Öğrenci Tablosu */
-#studentsTable {
+/* Öğretmen Girişi */
+#loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
-    border-collapse: collapse;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
 }
 
-#studentsTable th, #studentsTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+#loginPage h2 {
+    margin-bottom: 20px;
+    color: #333;
 }
 
-#studentsTable th {
-    background-color: #f2f2f2;
+#loginPage input[type="email"],
+#loginPage input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
-#studentsTable td button {
-    background-color: var(--secondary-color);
+#loginPage button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1976D2;
     color: white;
     border: none;
-    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
 }
 
-#studentsTable td button:hover {
-    background-color: var(--hover-color);
+#loginPage button:hover {
+    background-color: #1565C0;
+}
+
+#loginError {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Öğretmen Paneli */
+#teacherPanel {
+    display: none;
+    width: 100%;
 }
 
 /* Form Section */
@@ -90,9 +112,14 @@ body {
     margin: 20px 0;
 }
 
-.form-section input[type="text"], 
-.form-section input[type="password"], 
-.form-section input[type="number"], 
+.form-section h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.form-section input[type="text"],
+.form-section input[type="password"],
 .form-section select {
     width: 100%;
     padding: 12px;
@@ -105,7 +132,7 @@ body {
 .form-section button {
     width: 100%;
     padding: 12px;
-    background-color: var(--secondary-color);
+    background-color: #1976D2;
     color: white;
     border: none;
     border-radius: 5px;
@@ -114,10 +141,10 @@ body {
 }
 
 .form-section button:hover {
-    background-color: var(--hover-color);
+    background-color: #1565C0;
 }
 
-/* Öğrenci Listeleme */
+/* Öğrenci Listesi */
 ul {
     list-style-type: none;
     padding: 0;
