@@ -8,8 +8,8 @@ let teachers = JSON.parse(localStorage.getItem('teachers')) || [
 
 // Öğretmen Girişi
 function teacherLogin() {
-    const username = document.getElementById('teacherUsername').value;
-    const password = document.getElementById('teacherPassword').value;
+    const username = document.getElementById('teacherUsername').value.trim();
+    const password = document.getElementById('teacherPassword').value.trim();
     const loginError = document.getElementById('loginError');
 
     const teacher = teachers.find(t => t.username === username && t.password === password);
@@ -35,38 +35,43 @@ function showSection(sectionId) {
 
 // Sınıf Oluşturma
 function createClass() {
-    const className = document.getElementById('className').value;
-    if (className) {
-        const newClass = { id: Date.now(), name: className, students: [] };
-        classes.push(newClass);
-        localStorage.setItem('classes', JSON.stringify(classes));
-        alert(`${className} sınıfı başarıyla oluşturuldu.`);
-        document.getElementById('className').value = '';
-        updateClassSelect();
-    } else {
-        alert("Sınıf adı girmelisiniz.");
+    const className = document.getElementById('className').value.trim();
+    if (!className) {
+        alert("Lütfen bir sınıf adı girin.");
+        return;
     }
+
+    const newClass = { id: Date.now(), name: className, students: [] };
+    classes.push(newClass);
+    updateLocalStorage('classes', classes);
+
+    alert(`${className} sınıfı başarıyla oluşturuldu.`);
+    document.getElementById('className').value = '';
+    updateClassSelect();
 }
 
 // Öğrenci Ekleme
 function addStudent() {
-    const studentName = document.getElementById('studentName').value;
+    const studentName = document.getElementById('studentName').value.trim();
     const classId = document.getElementById('classSelect').value;
 
-    if (studentName && classId) {
-        const student = { id: Date.now(), name: studentName, classId };
-        students.push(student);
-        localStorage.setItem('students', JSON.stringify(students));
-
-        const selectedClass = classes.find(c => c.id === Number(classId));
-        selectedClass.students.push(student);
-        localStorage.setItem('classes', JSON.stringify(classes));
-
-        alert(`${studentName} başarıyla eklendi.`);
-        document.getElementById('studentName').value = '';
-    } else {
+    if (!studentName || !classId) {
         alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
+        return;
     }
+
+    const student = { id: Date.now(), name: studentName, classId: Number(classId) };
+    students.push(student);
+    updateLocalStorage('students', students);
+
+    const selectedClass = classes.find(c => c.id === Number(classId));
+    if (selectedClass) {
+        selectedClass.students.push(student);
+        updateLocalStorage('classes', classes);
+    }
+
+    alert(`${studentName} başarıyla eklendi.`);
+    document.getElementById('studentName').value = '';
 }
 
 // Sınıf ve Öğrenci Seçimlerini Güncelleme
@@ -105,27 +110,24 @@ function loadStudentsForAttendance() {
 
 function takeAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
-    if (classId) {
-        const attendanceList = document.querySelectorAll('#attendanceList li input');
-        const attendanceRecord = {
-            classId: Number(classId),
-            date: new Date().toLocaleDateString(),
-            records: []
-        };
-
-        attendanceList.forEach(input => {
-            attendanceRecord.records.push({
-                studentId: Number(input.dataset.id),
-                status: input.checked
-            });
-        });
-
-        attendanceRecords.push(attendanceRecord);
-        localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
-        alert("Yoklama başarıyla alındı.");
-    } else {
+    if (!classId) {
         alert("Lütfen bir sınıf seçin.");
+        return;
     }
+
+    const attendanceList = document.querySelectorAll('#attendanceList li input');
+    const attendanceRecord = {
+        classId: Number(classId),
+        date: new Date().toLocaleDateString(),
+        records: Array.from(attendanceList).map(input => ({
+            studentId: Number(input.dataset.id),
+            status: input.checked
+        }))
+    };
+
+    attendanceRecords.push(attendanceRecord);
+    updateLocalStorage('attendanceRecords', attendanceRecords);
+    alert("Yoklama başarıyla alındı.");
 }
 
 // Yoklama Raporlarını Göster
@@ -137,11 +139,11 @@ function showAttendanceReports() {
         const selectedClass = classes.find(c => c.id === record.classId);
         const report = `
             <div>
-                <h3>${selectedClass.name} (${record.date})</h3>
+                <h3>${selectedClass ? selectedClass.name : 'Bilinmeyen Sınıf'} (${record.date})</h3>
                 <ul>
                     ${record.records.map(r => {
                         const student = students.find(s => s.id === r.studentId);
-                        return `<li>${student.name}: ${r.status ? 'Var' : 'Yok'}</li>`;
+                        return `<li>${student ? student.name : 'Bilinmeyen Öğrenci'}: ${r.status ? 'Var' : 'Yok'}</li>`;
                     }).join('')}
                 </ul>
             </div>
@@ -155,16 +157,23 @@ function addStudentScore() {
     const studentId = prompt("Puan eklenecek öğrencinin ID'sini girin:");
     const student = students.find(s => s.id === Number(studentId));
 
-    if (student) {
-        const score = Number(prompt("Öğrencinin başarı puanını girin:"));
-        if (!isNaN(score)) {
-            student.score = score;
-            localStorage.setItem('students', JSON.stringify(students));
-            alert(`${student.name} için başarı puanı: ${score}`);
-        } else {
-            alert("Geçerli bir sayı girin.");
-        }
-    } else {
+    if (!student) {
         alert("Geçersiz öğrenci ID'si.");
+        return;
     }
+
+    const score = Number(prompt("Öğrencinin başarı puanını girin:"));
+    if (isNaN(score)) {
+        alert("Geçerli bir sayı girin.");
+        return;
+    }
+
+    student.score = score;
+    updateLocalStorage('students', students);
+    alert(`${student.name} için başarı puanı: ${score}`);
+}
+
+// Genel LocalStorage Güncelleme
+function updateLocalStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
 }
