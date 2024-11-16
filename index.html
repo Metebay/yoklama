@@ -3,69 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okul Öğrenci Kaydı ve Yoklama Sistemi</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <title>Metin Dosyasına Veri Kaydetme</title>
 </head>
 <body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <div id="sidebar" style="display: none;">
-            <ul>
-                <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
-                <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
-                <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
-                <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
-                <li><button onclick="showSection('studentsList')">Öğrenciler</button></li>
-            </ul>
-        </div>
+    <h1>Metin Dosyasına Veri Kaydetme</h1>
+    <form id="veriForm">
+        <label for="veriInput">Metin Girin:</label>
+        <input type="text" id="veriInput" name="veriInput" required>
+        <button type="submit">Kaydet ve İndir</button>
+    </form>
 
-        <!-- Main Content -->
-        <div class="content">
-            <!-- Öğretmen Girişi Sayfası -->
-            <div id="loginPage" class="form-section">
-                <h2>Öğretmen Girişi</h2>
-                <input type="email" id="teacherUsername" placeholder="E-posta" required>
-                <input type="password" id="teacherPassword" placeholder="Şifre" required>
-                <button onclick="teacherLogin()">Giriş Yap</button>
-                <p id="loginError" style="color: red;"></p>
-            </div>
+    <script>
+        // Formu ve veri girişini seçiyoruz
+        const form = document.getElementById('veriForm');
+        const veriInput = document.getElementById('veriInput');
 
-            <!-- Öğretmen Paneli -->
-            <div id="teacherPanel" style="display: none;">
-                <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
-                
-                <div id="classSection" class="form-section" style="display: none;">
-                    <h2>Sınıf Oluştur</h2>
-                    <input type="text" id="className" placeholder="Sınıf adı girin">
-                    <button onclick="createClass()">Sınıf Oluştur</button>
-                </div>
+        // Formun gönderilmesi
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-                <div id="studentSection" class="form-section" style="display: none;">
-                    <h2>Öğrenci Ekle</h2>
-                    <input type="text" id="studentName" placeholder="Öğrenci adı girin">
-                    <button onclick="addStudent()">Öğrenci Ekle</button>
-                </div>
+            // Giriş kutusundaki veriyi alıyoruz
+            const veri = veriInput.value;
 
-                <div id="attendanceSection" class="form-section" style="display: none;">
-                    <h2>Yoklama Al</h2>
-                    <button onclick="takeAttendance()">Yoklama Al</button>
-                </div>
+            // Blob oluşturuyoruz
+            const blob = new Blob([veri], { type: 'text/plain' });
 
-                <div id="attendanceReports" class="form-section" style="display: none;">
-                    <h2>Yoklama Kayıtları</h2>
-                </div>
+            // Dosyayı indirilebilir hale getiriyoruz
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'kaydedilen_veri.txt'; // Dosya adı
+            link.click();  // İndirme işlemini başlat
 
-                <div id="studentsList" class="form-section" style="display: none;">
-                    <h2>Öğrenciler</h2>
-                    <ul id="studentList"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+            veriInput.value = '';  // Giriş kutusunu temizliyoruz
+        });
+    </script>
 </body>
 </html>
