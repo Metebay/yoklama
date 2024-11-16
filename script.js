@@ -20,6 +20,7 @@ function teacherLogin() {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('teacherPanel').style.display = 'block';
         document.getElementById('sidebar').style.display = 'block';
+        showSection('classSection');
         updateClassSelect();
     } else {
         loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
@@ -39,6 +40,39 @@ function updateClassSelect() {
     });
 }
 
+// Formları Göster
+function showSection(sectionId) {
+    // Tüm form bölümlerini gizle
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // Seçilen bölümü göster
+    const selectedSection = document.getElementById(sectionId);
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
+    }
+}
+
+// Sınıf Oluştur
+function createClass() {
+    const className = document.getElementById('className').value;
+    if (!className) {
+        alert("Sınıf adı giriniz!");
+        return;
+    }
+
+    const classId = classes.length ? classes[classes.length - 1].id + 1 : 1;
+    const newClass = { id: classId, name: className, students: [] };
+
+    classes.push(newClass);
+    localStorage.setItem('classes', JSON.stringify(classes));
+    updateClassSelect();
+    alert("Sınıf oluşturuldu!");
+    document.getElementById('className').value = '';
+}
+
 // Öğrenci Ekleme
 function addStudent() {
     const studentName = document.getElementById('studentName').value;
@@ -55,13 +89,12 @@ function addStudent() {
     students.push(newStudent);
     localStorage.setItem('students', JSON.stringify(students));
 
-    // Öğrencinin sınıfa eklenmesi
     const selectedClass = classes.find(cls => cls.id == classId);
     selectedClass.students.push(newStudent);
     localStorage.setItem('classes', JSON.stringify(classes));
 
     alert("Öğrenci eklendi!");
-    document.getElementById('studentName').value = ''; // input temizle
+    document.getElementById('studentName').value = '';
     updateClassSelect();
 }
 
@@ -86,7 +119,6 @@ function deleteStudent(studentId) {
     students = students.filter(s => s.id !== studentId);
     localStorage.setItem('students', JSON.stringify(students));
 
-    // Aynı şekilde sınıftan silme
     classes.forEach(cls => {
         cls.students = cls.students.filter(s => s.id !== studentId);
     });
