@@ -1,101 +1,52 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
+.section {
+  display: none;
 }
 
-.wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.section.active {
+  display: block;
 }
 
-.tabs {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.tab-button {
-    padding: 10px 20px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
+form input, form button {
+  padding: 10px;
+  font-size: 16px;
 }
 
-.tab-button:hover {
-    background: #0056b3;
+form button {
+  background-color: #4a00ff;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-.form-section {
-    display: none;
+form button:hover {
+  background-color: #3700cc;
 }
 
-.form-section.active {
-    display: block;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
+table, th, td {
+  border: 1px solid #ddd;
 }
 
-input, select, button {
-    display: block;
-    margin-top: 5px;
-    padding: 10px;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
 }
 
 button {
-    background: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background: #218838;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-ul li {
-    padding: 10px;
-    background: #f1f1f1;
-    margin-top: 5px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-ul li button {
-    background: #dc3545;
-    color: #fff;
-    font-size: 14px;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-ul li button:hover {
-    background: #c82333;
+  padding: 5px 10px;
+  cursor: pointer;
 }
