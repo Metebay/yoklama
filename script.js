@@ -1,8 +1,9 @@
-// Firebase SDK'yı import et
+// Firebase Configuration and Initialization
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, set, get } from "firebase/database";
 
-// Firebase yapılandırması
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDtw3dBVcjhftDX7KqGdpdfAH7rCZuSGM4",
   authDomain: "yoklama-sistss.firebaseapp.com",
@@ -13,92 +14,114 @@ const firebaseConfig = {
   measurementId: "G-13FDPVPXQW"
 };
 
-// Firebase'i başlat
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// DOM Elemanlarını Başta Çekme
-const loginPage = document.getElementById('loginPage');
-const teacherPanel = document.getElementById('teacherPanel');
-const sidebar = document.getElementById('sidebar');
-const classSelect = document.getElementById('classSelect');
-const studentNameInput = document.getElementById('studentName');
-const studentsList = document.getElementById('studentsList');
-const studentsTable = document.getElementById('studentsTable');
-const loginError = document.getElementById('loginError');
-
-// Sabit Öğretmen Bilgileri
-const teachers = [
-    { username: "teacher1", password: "password1" },
-    { username: "teacher2", password: "password2" }
-];
-
-// Öğrenci Ekleme
-async function addStudent() {
-    const studentName = studentNameInput.value;
-    const classId = classSelect.value;
-
-    if (!studentName || !classId) return alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
-
-    try {
-        const student = { name: studentName, classId };
-        const docRef = await addDoc(collection(db, "students"), student);
-        console.log("Öğrenci eklendi: ", docRef.id);
-        loadStudentsList(); // Öğrenciyi ekledikten sonra listeyi güncelle
-    } catch (e) {
-        console.error("Hata oluştu: ", e);
-    }
-}
-
-// Öğrencileri Listeleme
-async function loadStudentsList() {
-    studentsList.innerHTML = ''; // Önceki listeyi temizle
-
-    const querySnapshot = await getDocs(collection(db, "students"));
-    querySnapshot.forEach((doc) => {
-        const studentData = doc.data();
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${studentData.name}</td>
-            <td>${studentData.classId}</td>
-            <td><button onclick="deleteStudent('${doc.id}')">Sil</button></td>
-        `;
-        studentsList.appendChild(row);
-    });
-}
-
-// Öğrenci Silme
-async function deleteStudent(studentId) {
-    try {
-        await deleteDoc(doc(db, "students", studentId));
-        console.log("Öğrenci silindi: ", studentId);
-        loadStudentsList(); // Silme işleminden sonra listeyi güncelle
-    } catch (e) {
-        console.error("Silme hatası: ", e);
-    }
-}
+const auth = getAuth(app);
+const db = getDatabase(app);
 
 // Öğretmen Girişi
 function teacherLogin() {
-    const username = document.getElementById('teacherUsername').value;
+    const email = document.getElementById('teacherUsername').value;
     const password = document.getElementById('teacherPassword').value;
+    const loginError = document.getElementById('loginError');
 
-    const teacher = teachers.find(t => t.username === username && t.password === password);
+    // Firebase Authentication ile giriş yap
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            loginError.textContent = '';
+            localStorage.setItem('loggedInUser', email);
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('teacherPanel').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'block';
+            loadStudentsList(); // Öğrencileri yükle
+        })
+        .catch((error) => {
+            loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
+            console.error('Giriş hatası: ', error.message);
+        });
+}
 
-    if (teacher) {
-        loginError.textContent = '';
-        localStorage.setItem('loggedInUser', username);
-        loginPage.style.display = 'none';
-        teacherPanel.style.display = 'block';
-        sidebar.style.display = 'block';
-        loadStudentsList(); // Öğrencileri yükle
-    } else {
-        loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
+// Öğrencileri Yükle
+function loadStudentsList() {
+    const studentsRef = ref(db, 'students');
+    get(studentsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const students = snapshot.val();
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '';
+            for (const studentId in students) {
+                const student = students[studentId];
+                const li = document.createElement('li');
+                li.textContent = `${student.name}`;
+                studentList.appendChild(li);
+            }
+        } else {
+            console.log("Öğrenci verisi bulunamadı");
+        }
+    }).catch((error) => {
+        console.error('Veri çekme hatası: ', error);
+    });
+}
+
+// Öğrenci Ekle
+function addStudent() {
+    const studentName = document.getElementById('studentName').value;
+    const studentId = Date.now(); // Örnek öğrenci ID
+    set(ref(db, 'students/' + studentId), {
+        name: studentName
+    });
+    alert('Öğrenci başarıyla eklendi');
+    loadStudentsList();
+}
+
+// Sınıf Oluştur
+function createClass() {
+    const className = document.getElementById('className').value;
+    const classId = Date.now(); // Örnek sınıf ID
+    set(ref(db, 'classes/' + classId), {
+        name: className
+    });
+    alert('Sınıf başarıyla oluşturuldu');
+}
+
+// Sidebar Menüsü
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+
+    const activeSection = document.getElementById(sectionId);
+    if (activeSection) {
+        activeSection.style.display = 'block';
     }
 }
 
-// Sidebar'da Seçilen Bölüme Git
-function showSection(sectionId) {
-    document.querySelectorAll('.form-section').forEach(section => section.style.display = 'none');
-    document.getElementById(sectionId).style.display = 'block';
+// Çıkış Yap
+function logout() {
+    auth.signOut().then(() => {
+        localStorage.removeItem('loggedInUser');
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('teacherPanel').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'none';
+    }).catch((error) => {
+        console.error('Çıkış hatası: ', error);
+    });
 }
+
+// Firebase Authentication Durumu
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // Kullanıcı giriş yapmışsa, öğretmen paneline yönlendir
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('teacherPanel').style.display = 'block';
+        document.getElementById('sidebar').style.display = 'block';
+        loadStudentsList(); // Öğrencileri yükle
+    } else {
+        // Kullanıcı giriş yapmamışsa, giriş sayfasını göster
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('teacherPanel').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'none';
+    }
+});
