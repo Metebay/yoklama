@@ -14,7 +14,7 @@
                 <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
                 <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
-                <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
+                <li><button onclick="showSection('attendanceReports'); showAttendanceReports();">Yoklama Raporları</button></li>
                 <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
             </ul>
         </div>
@@ -33,7 +33,7 @@
             </div>
 
             <!-- Öğretmen Paneli -->
-            <div id="teacherPanel" style="display:none;">
+            <div id="teacherPanel">
                 <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
                 
                 <div id="classSection" class="form-section">
@@ -56,7 +56,6 @@
 
                 <div id="attendanceSection" class="form-section">
                     <h2>Yoklama Al</h2>
-                    <label for="attendanceClassSelect">Sınıf Seçin:</label>
                     <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
                         <option value="">Sınıf Seçin</option>
                     </select>
@@ -73,7 +72,6 @@
 
                 <div id="scoreSection" class="form-section">
                     <h2>Başarı Puanı Sistemi</h2>
-                    <label for="studentScore">Başarı Puanı:</label>
                     <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
                     <button onclick="addStudentScore()">Puan Ekle</button>
                 </div>
