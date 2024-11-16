@@ -1,0 +1,199 @@
+/* Genel Stil */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFFFFF; /* Beyaz arka plan */
+}
+
+/* Wrapper */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 250px;
+    background-color: #E30613; /* Sivasspor kırmızısı */
+    color: white;
+    padding-top: 30px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: none;
+    transition: all 0.3s ease;
+}
+
+#sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    margin: 20px 0;
+}
+
+#sidebar button {
+    width: 100%;
+    padding: 15px;
+    background-color: #FFFFFF; /* Beyaz butonlar */
+    color: #E30613; /* Kırmızı yazı */
+    border: none;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#sidebar button:hover {
+    background-color: #FFD9DC; /* Açık kırmızı hover */
+}
+
+/* Content */
+.content {
+    flex-grow: 1;
+    padding: 40px;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Giriş Paneli */
+#loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #FFFFFF; /* Beyaz arka plan */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+#loginPage h2 {
+    margin-bottom: 20px;
+    color: #E30613; /* Kırmızı başlık */
+}
+
+#loginPage input[type="text"],
+#loginPage input[type="password"],
+#loginPage input[type="number"],
+#loginPage select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#loginPage button {
+    width: 100%;
+    padding: 12px;
+    background-color: #E30613; /* Kırmızı buton */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#loginPage button:hover {
+    background-color: #D3000F; /* Daha koyu kırmızı hover */
+}
+
+#loginError {
+    color: #E30613; /* Kırmızı hata mesajı */
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Öğretmen Paneli */
+#teacherPanel {
+    display: none;
+    width: 100%;
+}
+
+/* Form Section */
+.form-section {
+    margin: 20px 0;
+}
+
+.form-section h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #E30613; /* Kırmızı başlık */
+}
+
+.form-section input[type="text"],
+.form-section input[type="password"],
+.form-section input[type="number"],
+.form-section select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-section button {
+    width: 100%;
+    padding: 12px;
+    background-color: #E30613; /* Kırmızı buton */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-section button:hover {
+    background-color: #D3000F; /* Daha koyu kırmızı hover */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #FFFFFF; /* Beyaz liste arka planı */
+    padding: 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul li:hover {
+    background-color: #FFD9DC; /* Açık kırmızı hover */
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+
