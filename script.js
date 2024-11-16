@@ -1,3 +1,4 @@
+// Verileri Yerel Depodan Yükleme
 let classes = JSON.parse(localStorage.getItem('classes')) || [];
 let students = JSON.parse(localStorage.getItem('students')) || [];
 let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
@@ -16,7 +17,6 @@ function teacherLogin() {
 
     if (teacher) {
         loginError.textContent = '';
-        localStorage.setItem('loggedInUser', username);
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('teacherPanel').style.display = 'block';
         document.getElementById('sidebar').style.display = 'block';
@@ -35,38 +35,40 @@ function showSection(sectionId) {
 
 // Sınıf Oluşturma
 function createClass() {
-    const className = document.getElementById('className').value;
-    if (className) {
-        const newClass = { id: Date.now(), name: className, students: [] };
-        classes.push(newClass);
-        localStorage.setItem('classes', JSON.stringify(classes));
-        alert(`${className} sınıfı başarıyla oluşturuldu.`);
-        document.getElementById('className').value = '';
-        updateClassSelect();
-    } else {
+    const className = document.getElementById('className').value.trim();
+    if (!className) {
         alert("Sınıf adı girmelisiniz.");
+        return;
     }
+
+    const newClass = { id: Date.now(), name: className, students: [] };
+    classes.push(newClass);
+    localStorage.setItem('classes', JSON.stringify(classes));
+    alert(`${className} sınıfı başarıyla oluşturuldu.`);
+    document.getElementById('className').value = '';
+    updateClassSelect();
 }
 
 // Öğrenci Ekleme
 function addStudent() {
-    const studentName = document.getElementById('studentName').value;
+    const studentName = document.getElementById('studentName').value.trim();
     const classId = document.getElementById('classSelect').value;
 
-    if (studentName && classId) {
-        const student = { id: Date.now(), name: studentName };
-        students.push(student);
-        localStorage.setItem('students', JSON.stringify(students));
-
-        const selectedClass = classes.find(c => c.id === Number(classId));
-        selectedClass.students.push(student.id);
-        localStorage.setItem('classes', JSON.stringify(classes));
-
-        alert(`${studentName} başarıyla eklendi.`);
-        document.getElementById('studentName').value = '';
-    } else {
+    if (!studentName || !classId) {
         alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
+        return;
     }
+
+    const student = { id: Date.now(), name: studentName };
+    students.push(student);
+    localStorage.setItem('students', JSON.stringify(students));
+
+    const selectedClass = classes.find(cls => cls.id == classId);
+    selectedClass.students.push(student.id);
+    localStorage.setItem('classes', JSON.stringify(classes));
+
+    alert(`${studentName} başarıyla eklendi.`);
+    document.getElementById('studentName').value = '';
 }
 
 // Öğrencileri Listeleme
