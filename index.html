@@ -16,6 +16,7 @@
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
                 <li><button onclick="showSection('attendanceReports'); showAttendanceReports();">Yoklama Raporları</button></li>
                 <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
+                <li><button onclick="showSection('listStudents')">Öğrencileri Listele</button></li> <!-- Öğrenci listeleme menüsü -->
             </ul>
         </div>
 
@@ -74,6 +75,12 @@
                     <h2>Başarı Puanı Sistemi</h2>
                     <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
                     <button onclick="addStudentScore()">Puan Ekle</button>
+                </div>
+
+                <!-- Öğrencileri Listele -->
+                <div id="listStudents" class="form-section">
+                    <h2>Öğrencileri Listele</h2>
+                    <ul id="studentList"></ul> <!-- Öğrenciler burada listelenecek -->
                 </div>
             </div>
         </div>
