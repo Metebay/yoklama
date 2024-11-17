@@ -1,52 +1,180 @@
-.section {
-  display: none;
+/* Genel Stil */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
 }
 
-.section.active {
-  display: block;
+/* Wrapper */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* Sidebar */
+#sidebar {
+    width: 250px;
+    background-color: #2f3b52;
+    color: white;
+    padding-top: 30px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: none;
+    transition: all 0.3s ease;
 }
 
-form input, form button {
-  padding: 10px;
-  font-size: 16px;
+#sidebar ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-form button {
-  background-color: #4a00ff;
-  color: white;
-  border: none;
-  cursor: pointer;
+#sidebar ul li {
+    margin: 20px 0;
 }
 
-form button:hover {
-  background-color: #3700cc;
+#sidebar button {
+    width: 100%;
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+#sidebar button:hover {
+    background-color: #45a049;
 }
 
-table, th, td {
-  border: 1px solid #ddd;
+/* Content */
+.content {
+    flex-grow: 1;
+    padding: 40px;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
 }
 
-th, td {
-  padding: 8px;
-  text-align: left;
+/* Giriş Paneli */
+#loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
 }
 
-th {
-  background-color: #f4f4f4;
+#loginPage h2 {
+    margin-bottom: 20px;
+    color: #333;
 }
 
-button {
-  padding: 5px 10px;
-  cursor: pointer;
+#loginPage input[type="text"],
+#loginPage input[type="password"],
+#loginPage input[type="number"],
+#loginPage select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#loginPage button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#loginPage button:hover {
+    background-color: #45a049;
+}
+
+#loginError {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Öğretmen Paneli */
+#teacherPanel {
+    display: none;
+    width: 100%;
+}
+
+/* Form Section */
+.form-section {
+    margin: 20px 0;
+}
+
+.form-section h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.form-section input[type="text"],
+.form-section input[type="password"],
+.form-section input[type="number"],
+.form-section select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-section button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-section button:hover {
+    background-color: #45a049;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #fff;
+    padding: 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul li:nth-child(even) {
+    background-color: #f9f9f9;
 }
