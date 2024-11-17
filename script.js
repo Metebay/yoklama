@@ -1,79 +1,112 @@
-let students = [];
-let classes = [];
-let currentClass = '';
+import { db, auth } from './firebase.js';
+import { getDocs, collection, addDoc, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js";
 
-function showSection(section) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(section).classList.add('active');
+// Öğretmen Girişi
+function teacherLogin() {
+    const username = document.getElementById('teacherUsername').value;
+    const password = document.getElementById('teacherPassword').value;
+    const loginError = document.getElementById('loginError');
+
+    signInWithEmailAndPassword(auth, username, password)
+        .then((userCredential) => {
+            loginError.textContent = '';
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('teacherPanel').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'block'; // Sidebar'ı göster
+            updateClassSelect();
+        })
+        .catch((error) => {
+            loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
+        });
 }
 
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  // Basit bir giriş kontrolü
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  
-  if (username === 'teacher' && password === '1234') {
-    document.getElementById('loginPanel').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-  } else {
-    alert('Yanlış kullanıcı adı veya şifre');
-  }
-});
-
-document.getElementById('studentForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const name = document.getElementById('studentName').value;
-  const studentClass = document.getElementById('studentClass').value;
-  
-  const student = {
-    id: students.length + 1,
-    name: name,
-    studentClass: studentClass
-  };
-  
-  students.push(student);
-  updateStudentList();
-});
-
-function updateStudentList() {
-  const tbody = document.getElementById('studentTableBody');
-  tbody.innerHTML = '';
-  students.forEach((student, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${student.id}</td>
-      <td>${student.name}</td>
-      <td>${student.studentClass}</td>
-      <td><button onclick="deleteStudent(${student.id})">Sil</button></td>
-    `;
-    tbody.appendChild(row);
-  });
+// Sidebar'da seçilen bölüme git
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(sectionId).style.display = 'block';
 }
 
-function deleteStudent(id) {
-  students = students.filter(student => student.id !== id);
-  updateStudentList();
+// Sınıf ve öğrenci listeleme
+function updateClassSelect() {
+    const classSelect = document.getElementById('classSelect');
+    const attendanceClassSelect = document.getElementById('attendanceClassSelect');
+    classSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
+    attendanceClassSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
+
+    getDocs(collection(db, "classes"))
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const classData = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = classData.name;
+                classSelect.appendChild(option);
+
+                const attendanceOption = document.createElement('option');
+                attendanceOption.value = doc.id;
+                attendanceOption.textContent = classData.name;
+                attendanceClassSelect.appendChild(attendanceOption);
+            });
+        });
 }
 
-document.getElementById('attendanceForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const selectedClass = document.getElementById('attendanceClass').value;
-  showAttendance(selectedClass);
-});
-
-function showAttendance(className) {
-  currentClass = className;
-  const attendanceList = document.getElementById('attendanceList');
-  attendanceList.innerHTML = `<h3>${className} Yoklaması</h3>`;
-  students.filter(s => s.studentClass === className).forEach(student => {
-    const label = document.createElement('label');
-    label.innerHTML = `${student.name}: <input type="checkbox" data-student-id="${student.id}" />`;
-    attendanceList.appendChild(label);
-  });
+// Sınıf oluşturma
+async function createClass() {
+    const className = document.getElementById('className').value;
+    if (className) {
+        try {
+            const docRef = await addDoc(collection(db, "classes"), {
+                name: className,
+                students: []  // Başlangıçta boş öğrenci listesi
+            });
+            alert('Sınıf başarıyla oluşturuldu.');
+            updateClassSelect();  // Sınıf dropdown'ını güncelle
+        } catch (e) {
+            console.error("Hata oluştu: ", e);
+        }
+    } else {
+        alert("Lütfen geçerli bir sınıf adı girin.");
+    }
 }
 
-function logout() {
-  document.getElementById('loginPanel').style.display = 'block';
-  document.getElementById('mainContent').style.display = 'none';
+// Öğrenci ekleme
+async function addStudent() {
+    const studentName = document.getElementById('studentName').value;
+    const classId = document.getElementById('classSelect').value;
+
+    if (studentName && classId) {
+        const student = { name: studentName, id: Date.now() };
+        try {
+            const classDocRef = doc(db, "classes", classId);
+            await updateDoc(classDocRef, {
+                students: arrayUnion(student)  // Öğrenciyi sınıfın öğrenci listesine ekle
+            });
+            alert(`${studentName} sınıfına eklendi.`);
+            loadStudentsList();  // Öğrenci listesini güncelle
+        } catch (e) {
+            console.error("Hata oluştu: ", e);
+        }
+    } else {
+        alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
+    }
+}
+
+// Öğrenci listeleme
+function loadStudentsList() {
+    const studentList = document.getElementById('studentList');
+    studentList.innerHTML = '';
+
+    getDocs(collection(db, "students"))
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const studentData = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = `${studentData.name}`;
+                studentList.appendChild(listItem);
+            });
+        });
 }
