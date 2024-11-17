@@ -1,91 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Öğrenci Kayıt Sistemi</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Okul Öğrenci Kaydı ve Yoklama Sistemi</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js"></script>
+    <script src="firebase.js" type="module"></script>
+    <script src="script.js" type="module"></script>
 </head>
 <body>
-  <!-- Login Paneli -->
-  <div id="loginPanel" class="section active">
-    <h2>Öğretmen Girişi</h2>
-    <form id="loginForm">
-      <label for="username">Kullanıcı Adı:</label>
-      <input type="text" id="username" placeholder="Kullanıcı Adı" required>
-      <label for="password">Şifre:</label>
-      <input type="password" id="password" placeholder="Şifre" required>
-      <button type="submit">Giriş Yap</button>
-    </form>
-  </div>
-
-  <!-- Ana İçerik Paneli -->
-  <div class="container" id="mainContent" style="display: none;">
-    <div class="sidebar">
-      <div class="profile">
-        <div class="profile-icon">👤</div>
-        <h2>AHMET CAN</h2>
-        <p>BEDEN EĞİT. ÖĞR.</p>
-      </div>
-      <nav class="menu">
-        <button onclick="showSection('register')">ÖĞRENCİ KAYIT</button>
-        <button onclick="showSection('classList')">SINIFLAR</button>
-        <button onclick="showSection('attendance')">YOKLAMA</button>
-        <button onclick="logout()">ÇIKIŞ</button>
-      </nav>
-      <div class="logo">
-        <h1>LOGO</h1>
-      </div>
-    </div>
-
-    <div class="content">
-      <!-- Öğrenci Kayıt Formu -->
-      <div id="register" class="section">
-        <h2>Öğrenci Kayıt</h2>
-        <form id="studentForm">
-          <label for="studentName">Ad-Soyad:</label>
-          <input type="text" id="studentName" placeholder="Ad-Soyad" required>
-          <label for="studentClass">Sınıf:</label>
-          <input type="text" id="studentClass" placeholder="Sınıf" required>
-          <button type="submit">Kaydet</button>
-        </form>
-      </div>
-
-      <!-- Sınıf Listesi -->
-      <div id="classList" class="section">
-        <h2>Sınıflar</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>NO</th>
-              <th>AD-SOYAD</th>
-              <th>SINIF</th>
-              <th>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody id="studentTableBody">
-            <!-- Öğrenciler burada listelenecek -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Yoklama -->
-      <div id="attendance" class="section">
-        <h2>Yoklama</h2>
-        <form id="attendanceForm">
-          <label for="attendanceClass">Sınıf Seç:</label>
-          <select id="attendanceClass" required>
-            <!-- Sınıflar burada listelenecek -->
-          </select>
-          <button type="submit">Yoklama Al</button>
-        </form>
-        <div id="attendanceList">
-          <!-- Yoklama sonucu listelenecek -->
+    <div class="wrapper">
+        <div id="sidebar" style="display: none;">
+            <ul>
+                <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
+                <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
+                <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
+                <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
+                <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
+            </ul>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+        <div class="content">
+            <div id="loginPage" class="form-section">
+                <h2>Öğretmen Girişi</h2>
+                <label for="teacherUsername">Kullanıcı Adı:</label>
+                <input type="text" id="teacherUsername" placeholder="Kullanıcı adı girin">
+                <label for="teacherPassword">Şifre:</label>
+                <input type="password" id="teacherPassword" placeholder="Şifre girin">
+                <button onclick="teacherLogin()">Giriş Yap</button>
+                <p id="loginError" style="color: red;"></p>
+            </div>
+
+            <div id="teacherPanel" style="display: none;">
+                <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
+                
+                <div id="classSection" class="form-section" style="display: none;">
+                    <h2>Sınıf Oluştur</h2>
+                    <label for="className">Sınıf Adı:</label>
+                    <input type="text" id="className" placeholder="Sınıf adı girin">
+                    <button onclick="createClass()">Sınıf Oluştur</button>
+                </div>
+
+                <div id="studentSection" class="form-section" style="display: none;">
+                    <h2>Öğrenci Ekle</h2>
+                    <label for="studentName">Öğrenci Adı:</label>
+                    <input type="text" id="studentName" placeholder="Öğrenci adı girin">
+                    <label for="classSelect">Sınıf Seçin:</label>
+                    <select id="classSelect">
+                        <option value="">Sınıf Seçin</option>
+                    </select>
+                    <button onclick="addStudent()">Öğrenci Ekle</button>
+                </div>
+
+                <div id="attendanceSection" class="form-section" style="display: none;">
+                    <h2>Yoklama Al</h2>
+                    <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
+                        <option value="">Sınıf Seçin</option>
+                    </select>
+                    <ul id="attendanceList"></ul>
+                    <button onclick="takeAttendance()">Yoklama Al</button>
+                </div>
+
+                <div id="attendanceReports" class="form-section" style="display: none;">
+                    <h2>Yoklama Kayıtları</h2>
+                    <div id="attendanceReportsList"></div>
+                </div>
+
+                <div id="scoreSection" class="form-section" style="display: none;">
+                    <h2>Başarı Puanı Sistemi</h2>
+                    <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
+                    <button onclick="addStudentScore()">Puan Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
