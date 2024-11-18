@@ -1,4 +1,4 @@
-import { db, auth } from './firebase.js';
+import { db, auth } from './firebase.js';  // Firebase bağlantısını sağla
 import { getDocs, collection, addDoc, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js";
 
@@ -109,4 +109,49 @@ function loadStudentsList() {
                 studentList.appendChild(listItem);
             });
         });
+}
+
+// Öğrenci yoklaması
+function loadStudentsForAttendance() {
+    const classId = document.getElementById('attendanceClassSelect').value;
+    const attendanceList = document.getElementById('attendanceList');
+    attendanceList.innerHTML = '';
+
+    if (classId) {
+        const classRef = doc(db, "classes", classId);
+        getDocs(collection(classRef, "students"))
+            .then(querySnapshot => {
+                querySnapshot.forEach(studentDoc => {
+                    const studentData = studentDoc.data();
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${studentData.name}`;
+                    attendanceList.appendChild(listItem);
+                });
+            });
+    }
+}
+
+// Yoklama alma
+function takeAttendance() {
+    const attendanceList = document.getElementById('attendanceList');
+    const attendanceData = [];
+
+    attendanceList.querySelectorAll('li').forEach(item => {
+        const studentName = item.textContent;
+        attendanceData.push({
+            name: studentName,
+            timestamp: new Date(),
+        });
+    });
+
+    // Yoklama bilgilerini Firestore'a kaydet
+    try {
+        const docRef = await addDoc(collection(db, "attendanceRecords"), {
+            timestamp: new Date(),
+            attendanceData
+        });
+        alert("Yoklama başarıyla alındı.");
+    } catch (e) {
+        console.error("Yoklama kaydedilemedi: ", e);
+    }
 }
