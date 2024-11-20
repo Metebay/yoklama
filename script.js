@@ -1,89 +1,120 @@
-const classes = JSON.parse(localStorage.getItem('classes')) || [];
-const students = JSON.parse(localStorage.getItem('students')) || [];
-const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
-const teachers = [
-    { username: "teacher1", password: "password1" },
-    { username: "teacher2", password: "password2" }
-];
+// Öğretmen Girişi
+let classes = JSON.parse(localStorage.getItem('classes')) || [];
+let students = JSON.parse(localStorage.getItem('students')) || [];
+let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
 
-// Giriş İşlemi
 function teacherLogin() {
     const username = document.getElementById('teacherUsername').value;
     const password = document.getElementById('teacherPassword').value;
-    const teacher = teachers.find(t => t.username === username && t.password === password);
-
-    if (teacher) {
+    if (username === 'admin' && password === 'admin') {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('teacherPanel').style.display = 'block';
-        document.getElementById('sidebar').style.display = 'block';
-        updateClassSelect();
+        loadClasses();
+        loadStudentsList();
     } else {
-        showToast("Kullanıcı adı veya şifre yanlış.", true);
+        document.getElementById('loginError').textContent = 'Geçersiz kullanıcı adı veya şifre!';
     }
 }
 
-// Sınıf İşlemleri
+// Sınıf Oluşturma
 function createClass() {
     const className = document.getElementById('className').value;
-    if (!className) {
-        showToast("Sınıf adı girin.", true);
-        return;
+    if (className) {
+        const newClass = { id: Date.now(), name: className };
+        classes.push(newClass);
+        localStorage.setItem('classes', JSON.stringify(classes));
+        loadClasses();
     }
-    const newClass = { id: Date.now(), name: className, students: [] };
-    classes.push(newClass);
-    localStorage.setItem('classes', JSON.stringify(classes));
-    showToast(`${className} sınıfı oluşturuldu.`);
-    document.getElementById('className').value = '';
-    updateClassSelect();
 }
 
-// Öğrenci İşlemleri
+// Öğrenci Ekleme
 function addStudent() {
     const studentName = document.getElementById('studentName').value;
-    const classId = document.getElementById('classSelect').value;
-
-    if (!studentName || !classId) {
-        showToast("Öğrenci adı ve sınıf seçimi gerekli.", true);
-        return;
+    const classSelect = document.getElementById('classSelect').value;
+    if (studentName && classSelect) {
+        const newStudent = { id: Date.now(), name: studentName, classId: classSelect };
+        students.push(newStudent);
+        localStorage.setItem('students', JSON.stringify(students));
+        loadStudentsList();
     }
+}
 
-    const student = { id: Date.now(), name: studentName, classId };
-    students.push(student);
-    localStorage.setItem('students', JSON.stringify(students));
-    showToast(`${studentName} başarıyla eklendi.`);
-    document.getElementById('studentName').value = '';
+// Öğrenci Listeleme
+function loadStudentsList() {
+    const studentList = document.getElementById('studentList');
+    studentList.innerHTML = '';
+    students.forEach(student => {
+        const listItem = document.createElement('li');
+        const studentClass = classes.find(c => c.id == student.classId);
+        listItem.textContent = `${student.name} (${studentClass ? studentClass.name : 'Bilinmeyen Sınıf'})`;
+        studentList.appendChild(listItem);
+    });
 }
 
 // Yoklama Al
+function loadStudentsForAttendance() {
+    const classId = document.getElementById('attendanceClassSelect').value;
+    const attendanceList = document.getElementById('attendanceList');
+    attendanceList.innerHTML = '';
+    if (classId) {
+        const studentsInClass = students.filter(student => student.classId == classId);
+        studentsInClass.forEach(student => {
+            const listItem = document.createElement('li');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `student-${student.id}`;
+            listItem.textContent = student.name;
+            listItem.prepend(checkbox);
+            attendanceList.appendChild(listItem);
+        });
+    }
+}
+
+// Yoklama Kaydet
 function takeAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
-    const checkboxes = document.querySelectorAll('#attendanceList input[type="checkbox"]');
-    const records = Array.from(checkboxes).map(cb => ({
-        studentId: parseInt(cb.value),
-        present: cb.checked
-    }));
-
-    attendanceRecords.push({ classId, date: new Date().toISOString(), records });
-    localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
-    showToast("Yoklama başarıyla kaydedildi.");
+    const attendance = [];
+    const checkboxes = document.querySelectorAll(`#attendanceList input[type="checkbox"]`);
+    checkboxes.forEach(checkbox => {
+        const studentId = checkbox.id.split('-')[1];
+        const student = students.find(s => s.id == studentId);
+        if (checkbox.checked) {
+            attendance.push({ studentId: student.id, name: student.name, status: 'Var' });
+        } else {
+            attendance.push({ studentId: student.id, name: student.name, status: 'Yok' });
+        }
+    });
+    if (attendance.length > 0) {
+        const attendanceRecord = { classId, date: new Date(), attendance };
+        attendanceRecords.push(attendanceRecord);
+        localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+        alert("Yoklama başarıyla alındı.");
+        loadAttendanceReports();
+    } else {
+        alert("Lütfen yoklama almak için öğrenci seçin.");
+    }
 }
 
-// Yoklama Raporu
+// Yoklama Raporları
 function loadAttendanceReports() {
-    const classId = document.getElementById('reportClassSelect').value;
-    const reports = attendanceRecords.filter(r => r.classId === classId);
-    const reportList = document.getElementById('attendanceReportsList');
-    reportList.innerHTML = reports.length
-        ? reports.map(r => `<div>${r.date} - ${r.records.length} kayıt</div>`).join("")
-        : "Rapor yok.";
+    const attendanceReportsList = document.getElementById('attendanceReportsList');
+    attendanceReportsList.innerHTML = '';
+    attendanceRecords.forEach(record => {
+        const reportItem = document.createElement('div');
+        const date = new Date(record.date).toLocaleString();
+        reportItem.innerHTML = `<strong>${date}</strong><br>`;
+        record.attendance.forEach(entry => {
+            reportItem.innerHTML += `${entry.name}: ${entry.status}<br>`;
+        });
+        attendanceReportsList.appendChild(reportItem);
+    });
 }
 
-// Geri Bildirim
-function showToast(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.style.backgroundColor = isError ? '#e74c3c' : '#2ecc71';
-    toast.textContent = message;
-    document.getElementById('toastContainer').appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+// Sidebar Göster
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(sectionId).style.display = 'block';
 }
