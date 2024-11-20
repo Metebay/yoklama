@@ -4,23 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yoklama Sistemi</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Öğretmen Girişi Sayfası -->
     <div id="loginPage">
         <h2>Öğretmen Girişi</h2>
-        <form id="loginForm" onsubmit="teacherLogin(); return false;">
+        <form id="loginForm">
             <input type="text" id="teacherUsername" placeholder="Kullanıcı Adı" required>
             <input type="password" id="teacherPassword" placeholder="Şifre girin" required>
-            <button type="submit">Giriş Yap</button>
+            <button type="button" onclick="teacherLogin()">Giriş Yap</button>
         </form>
         <div id="loginError"></div>
     </div>
 
     <!-- Öğretmen Paneli ve Sidebar -->
     <div id="teacherPanel" style="display: none;">
-        <div id="sidebar" style="display: none;">
+        <div id="sidebar" style="display: block;">
             <button onclick="showSection('addClass')">Sınıf Ekle</button>
             <button onclick="showSection('addStudent')">Öğrenci Ekle</button>
             <button onclick="showSection('takeAttendance')">Yoklama Al</button>
@@ -31,7 +30,7 @@
         <div id="addClass" class="form-section" style="display: none;">
             <h3>Sınıf Ekle</h3>
             <input type="text" id="className" placeholder="Sınıf Adı" required>
-            <button onclick="createClass()">Sınıf Oluştur</button>
+            <button type="button" onclick="createClass()">Sınıf Oluştur</button>
         </div>
 
         <!-- Öğrenci Ekleme -->
@@ -41,7 +40,7 @@
             <select id="classSelect">
                 <option value="">Sınıf Seçin</option>
             </select>
-            <button onclick="addStudent()">Öğrenci Ekle</button>
+            <button type="button" onclick="addStudent()">Öğrenci Ekle</button>
         </div>
 
         <!-- Yoklama Al -->
@@ -51,7 +50,7 @@
                 <option value="">Sınıf Seçin</option>
             </select>
             <ul id="attendanceList"></ul>
-            <button onclick="takeAttendance()">Yoklama Kaydet</button>
+            <button type="button" onclick="takeAttendance()">Yoklama Kaydet</button>
         </div>
 
         <!-- Yoklama Raporları -->
