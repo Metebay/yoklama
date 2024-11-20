@@ -64,6 +64,12 @@ function addStudent() {
     if (studentName && classId) {
         const student = { name: studentName, id: Date.now(), classId };
         const selectedClass = classes.find(c => c.id == classId);
+
+        if (!selectedClass) {
+            alert("Seçilen sınıf bulunamadı.");
+            return;
+        }
+
         selectedClass.students.push(student);
         students.push(student);
         localStorage.setItem('students', JSON.stringify(students));
@@ -117,11 +123,19 @@ function loadStudentsForAttendance() {
 
     if (classId) {
         const selectedClass = classes.find(c => c.id == classId);
+
+        if (!selectedClass || selectedClass.students.length === 0) {
+            alert("Bu sınıfın öğrencisi bulunmamaktadır.");
+            return;
+        }
+
         selectedClass.students.forEach(student => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `${student.name} <input type="checkbox" data-student-id="${student.id}">`;
             attendanceList.appendChild(listItem);
         });
+    } else {
+        alert("Lütfen sınıf seçin.");
     }
 }
 
@@ -129,6 +143,12 @@ function loadStudentsForAttendance() {
 function takeAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
     const selectedClass = classes.find(c => c.id == classId);
+
+    if (!selectedClass) {
+        alert("Geçerli bir sınıf seçin.");
+        return;
+    }
+
     const attendanceData = [];
 
     // Tüm öğrencileri kontrol et ve yoklama verilerini topla
@@ -142,6 +162,11 @@ function takeAttendance() {
             present: checkbox.checked
         });
     });
+
+    if (attendanceData.length === 0) {
+        alert("Yoklama alınacak öğrenci yok.");
+        return;
+    }
 
     const attendanceRecord = {
         classId,
