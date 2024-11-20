@@ -23,6 +23,8 @@ body {
     bottom: 0;
     left: 0;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: none;
+    transition: all 0.3s ease;
 }
 
 #sidebar ul {
@@ -58,7 +60,24 @@ body {
     margin-left: 250px;
     transition: margin-left 0.3s ease;
 }
+#studentList li {
+    margin-bottom: 10px;
+}
 
+#studentList button {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#studentList button:hover {
+    background-color: darkred;
+}
+
+/* Giriş Paneli */
 /* Giriş Paneli */
 #loginPage {
     display: flex;
@@ -72,12 +91,13 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
-    max-width: 400px;
+    max-width: 400px; /* Maksimum genişlik */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 20px;
 }
 
+/* Diğer stiller devam eder */
 #loginPage h2 {
     margin-bottom: 20px;
     color: #333;
@@ -115,7 +135,6 @@ body {
     font-size: 14px;
     margin-top: 10px;
 }
-
 /* Öğretmen Paneli */
 #teacherPanel {
     display: none;
@@ -173,6 +192,24 @@ ul li {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-ul li:nth-child(even) {
-    background-color: #f9f9f9;
+ul li:hover {
+    background-color: #f0f0f0;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+    }
+
+    .content {
+        margin-left: 0;
+    }
 }
