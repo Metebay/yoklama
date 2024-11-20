@@ -3,56 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Öğrenci ve Yoklama Yönetimi</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Yoklama Sistemi</title>
 </head>
 <body>
-    <!-- Öğretmen Giriş Sayfası -->
+    <!-- Öğretmen Girişi Sayfası -->
     <div id="loginPage">
-        <input type="text" id="teacherUsername" placeholder="Kullanıcı Adı">
-        <input type="password" id="teacherPassword" placeholder="Şifre">
-        <button onclick="teacherLogin()">Giriş Yap</button>
+        <h2>Öğretmen Girişi</h2>
+        <form id="loginForm" onsubmit="teacherLogin(); return false;">
+            <input type="text" id="teacherUsername" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="teacherPassword" placeholder="Şifre girin" required>
+            <button type="submit">Giriş Yap</button>
+        </form>
         <div id="loginError"></div>
     </div>
 
-    <!-- Öğretmen Paneli -->
-    <div id="teacherPanel" style="display:none;">
-        <div id="sidebar" style="display:none;">
-            <button onclick="showSection('addClassSection')">Sınıf Ekle</button>
-            <button onclick="showSection('addStudentSection')">Öğrenci Ekle</button>
-            <button onclick="showSection('attendanceSection')">Yoklama Al</button>
+    <!-- Öğretmen Paneli ve Sidebar -->
+    <div id="teacherPanel" style="display: none;">
+        <div id="sidebar" style="display: none;">
+            <button onclick="showSection('addClass')">Sınıf Ekle</button>
+            <button onclick="showSection('addStudent')">Öğrenci Ekle</button>
+            <button onclick="showSection('takeAttendance')">Yoklama Al</button>
             <button onclick="showSection('attendanceReports')">Yoklama Raporları</button>
-            <button onclick="showSection('studentListSection')">Öğrenci Listesi</button>
         </div>
-
+        
         <!-- Sınıf Ekleme -->
-        <div class="form-section" id="addClassSection">
-            <h2>Sınıf Ekle</h2>
-            <input type="text" id="className" placeholder="Sınıf Adı">
-            <button onclick="addClass()">Sınıf Ekle</button>
+        <div id="addClass" class="form-section" style="display: none;">
+            <h3>Sınıf Ekle</h3>
+            <input type="text" id="className" placeholder="Sınıf Adı" required>
+            <button onclick="createClass()">Sınıf Oluştur</button>
         </div>
 
         <!-- Öğrenci Ekleme -->
-        <div class="form-section" id="addStudentSection" style="display:none;">
-            <h2>Öğrenci Ekle</h2>
-            <input type="text" id="studentName" placeholder="Öğrenci Adı">
-            <select id="classSelect"></select>
+        <div id="addStudent" class="form-section" style="display: none;">
+            <h3>Öğrenci Ekle</h3>
+            <input type="text" id="studentName" placeholder="Öğrenci Adı" required>
+            <select id="classSelect">
+                <option value="">Sınıf Seçin</option>
+            </select>
             <button onclick="addStudent()">Öğrenci Ekle</button>
-            <ul id="studentList"></ul>
         </div>
 
         <!-- Yoklama Al -->
-        <div class="form-section" id="attendanceSection" style="display:none;">
-            <h2>Yoklama Al</h2>
-            <select id="attendanceClassSelect"></select>
-            <button onclick="loadStudentsForAttendance()">Öğrencileri Yükle</button>
+        <div id="takeAttendance" class="form-section" style="display: none;">
+            <h3>Yoklama Al</h3>
+            <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
+                <option value="">Sınıf Seçin</option>
+            </select>
             <ul id="attendanceList"></ul>
-            <button onclick="takeAttendance()">Yoklamayı Kaydet</button>
+            <button onclick="takeAttendance()">Yoklama Kaydet</button>
         </div>
 
         <!-- Yoklama Raporları -->
-        <div class="form-section" id="attendanceReports" style="display:none;">
-            <h2>Yoklama Raporları</h2>
+        <div id="attendanceReports" class="form-section" style="display: none;">
+            <h3>Yoklama Raporları</h3>
             <div id="attendanceReportsList"></div>
         </div>
     </div>
