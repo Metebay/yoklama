@@ -9,13 +9,14 @@
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <div id="sidebar">
+        <div id="sidebar" style="display: none;">
             <ul>
                 <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
                 <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
                 <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
                 <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
+                <li><button onclick="showSection('studentListSection')">Öğrenci Listesi</button></li>
             </ul>
         </div>
 
@@ -74,6 +75,12 @@
                     <h2>Başarı Puanı Sistemi</h2>
                     <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
                     <button onclick="addStudentScore()">Puan Ekle</button>
+                </div>
+
+                <!-- Öğrenci Listesi Sayfası -->
+                <div id="studentListSection" class="form-section" style="display: none;">
+                    <h2>Öğrenci Listesi</h2>
+                    <ul id="studentList"></ul>
                 </div>
             </div>
         </div>
