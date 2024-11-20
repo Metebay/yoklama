@@ -15,12 +15,13 @@
                 <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
                 <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
+                <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="content">
-            <!-- Öğretmen Girişi -->
+            <!-- Öğretmen Girişi Sayfası -->
             <div id="loginPage" class="form-section">
                 <h2>Öğretmen Girişi</h2>
                 <label for="teacherUsername">Kullanıcı Adı:</label>
@@ -34,7 +35,7 @@
             <!-- Öğretmen Paneli -->
             <div id="teacherPanel" style="display: none;">
                 <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
-
+                
                 <div id="classSection" class="form-section" style="display: none;">
                     <h2>Sınıf Oluştur</h2>
                     <label for="className">Sınıf Adı:</label>
@@ -55,7 +56,6 @@
 
                 <div id="attendanceSection" class="form-section" style="display: none;">
                     <h2>Yoklama Al</h2>
-                    <label for="attendanceClassSelect">Sınıf Seçin:</label>
                     <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
                         <option value="">Sınıf Seçin</option>
                     </select>
@@ -65,18 +65,19 @@
 
                 <div id="attendanceReports" class="form-section" style="display: none;">
                     <h2>Yoklama Kayıtları</h2>
-                    <label for="reportClassSelect">Sınıf Seçin:</label>
-                    <select id="reportClassSelect" onchange="loadAttendanceReports()">
-                        <option value="">Sınıf Seçin</option>
-                    </select>
-                    <div id="attendanceReportsList"></div>
+                    <div id="attendanceReportsList">
+                        <!-- Raporlar burada görünecek -->
+                    </div>
+                </div>
+
+                <div id="scoreSection" class="form-section" style="display: none;">
+                    <h2>Başarı Puanı Sistemi</h2>
+                    <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
+                    <button onclick="addStudentScore()">Puan Ekle</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Toast Mesajları -->
-    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
 
     <script src="script.js"></script>
 </body>
