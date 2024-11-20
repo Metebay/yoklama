@@ -1,8 +1,9 @@
-// Öğretmen Girişi
+// Veritabanı gibi çalışan yerel depolama
 let classes = JSON.parse(localStorage.getItem('classes')) || [];
 let students = JSON.parse(localStorage.getItem('students')) || [];
 let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
 
+// Öğretmen Girişi
 function teacherLogin() {
     const username = document.getElementById('teacherUsername').value;
     const password = document.getElementById('teacherPassword').value;
@@ -39,7 +40,7 @@ function addStudent() {
     }
 }
 
-// Öğrenci Listeleme
+// Öğrencileri Listeleme
 function loadStudentsList() {
     const studentList = document.getElementById('studentList');
     studentList.innerHTML = '';
