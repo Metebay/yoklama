@@ -33,10 +33,6 @@ function showSection(sectionId) {
         section.style.display = 'none';
     });
     document.getElementById(sectionId).style.display = 'block';
-
-    if (sectionId === 'attendanceRecordsSection') {
-        displayAttendanceRecords();
-    }
 }
 
 // Sınıf ve öğrenci listeleme
@@ -94,23 +90,22 @@ function loadStudentsList() {
     });
 }
 
-// Öğrencileri yoklama için listele
+// Yoklama almak için öğrencileri listeleme
 function loadStudentsForAttendance() {
     const classId = document.getElementById('attendanceClassSelect').value;
     const attendanceList = document.getElementById('attendanceList');
     attendanceList.innerHTML = '';
 
-    if (classId) {
-        const selectedClass = classes.find(c => c.id == classId);
-        selectedClass.students.forEach(student => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                ${student.name} 
-                <label><input type="checkbox" class="attendanceCheck" data-student-id="${student.id}"> Var</label>
-            `;
-            attendanceList.appendChild(listItem);
-        });
-    }
+    if (!classId) return;
+
+    const selectedClass = classes.find(c => c.id == classId);
+    selectedClass.students.forEach(student => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <input type="checkbox" class="attendanceCheck" data-student-id="${student.id}"> ${student.name}
+        `;
+        attendanceList.appendChild(listItem);
+    });
 }
 
 // Yoklama al
@@ -134,11 +129,10 @@ function takeAttendance() {
             date: new Date().toLocaleDateString(),
             attendance: attendance
         };
-
         attendanceRecords.push(attendanceRecord);
         localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
 
-        alert('Yoklama başarıyla alındı.');
+        alert("Yoklama başarıyla alındı.");
         displayAttendanceRecords();
     }
 }
@@ -148,7 +142,7 @@ function displayAttendanceRecords() {
     const attendanceRecordsList = document.getElementById('attendanceRecordsList');
     attendanceRecordsList.innerHTML = '';
 
-    if (!attendanceRecords.length) {
+    if (!Array.isArray(attendanceRecords) || attendanceRecords.length === 0) {
         attendanceRecordsList.innerHTML = '<p>Henüz yoklama alınmamış.</p>';
         return;
     }
