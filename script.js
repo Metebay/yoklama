@@ -1,6 +1,6 @@
+// Verilerin Yerel Depodan Yüklenmesi
 let classes = JSON.parse(localStorage.getItem('classes')) || [];
 let students = JSON.parse(localStorage.getItem('students')) || [];
-let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
 let teachers = JSON.parse(localStorage.getItem('teachers')) || [
     { username: "teacher1", password: "password1" },
     { username: "teacher2", password: "password2" }
@@ -8,182 +8,133 @@ let teachers = JSON.parse(localStorage.getItem('teachers')) || [
 
 // Öğretmen Girişi
 function teacherLogin() {
-    const username = document.getElementById('teacherUsername').value;
-    const password = document.getElementById('teacherPassword').value;
+    const username = getInputValue('teacherUsername');
+    const password = getInputValue('teacherPassword');
     const loginError = document.getElementById('loginError');
 
     const teacher = teachers.find(t => t.username === username && t.password === password);
-
     if (teacher) {
         loginError.textContent = '';
-        localStorage.setItem('loggedInUser', username);
-        document.getElementById('loginPage').style.display = 'none';
-        document.getElementById('teacherPanel').style.display = 'block';
-        document.getElementById('sidebar').style.display = 'block';
+        toggleVisibility('loginPage', false);
+        toggleVisibility('teacherPanel', true);
+        toggleVisibility('sidebar', true);
         updateClassSelect();
     } else {
         loginError.textContent = 'Kullanıcı adı veya şifre yanlış.';
     }
 }
 
-// Sidebar'da seçilen bölüme git
+// Bölüm Görünürlüğünü Yönetme
 function showSection(sectionId) {
     const sections = document.querySelectorAll('.form-section');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-    document.getElementById(sectionId).style.display = 'block';
+    sections.forEach(section => toggleVisibility(section.id, false));
+    toggleVisibility(sectionId, true);
 }
 
-// Sınıf ve öğrenci listeleme
+// Sınıf Oluşturma
+function createClass() {
+    const className = getInputValue('className');
+    if (!className) {
+        alert('Sınıf adı boş olamaz.');
+        return;
+    }
+
+    const newClass = {
+        id: Date.now(),
+        name: className,
+        students: []
+    };
+
+    classes.push(newClass);
+    localStorage.setItem('classes', JSON.stringify(classes));
+    alert(`"${className}" sınıfı başarıyla oluşturuldu.`);
+    clearInput('className');
+    updateClassSelect();
+}
+
+// Sınıf ve Öğrenci Seçeneklerini Güncelleme
 function updateClassSelect() {
-    const classSelect = document.getElementById('classSelect');
-    const attendanceClassSelect = document.getElementById('attendanceClassSelect');
-    classSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
-    attendanceClassSelect.innerHTML = '<option value="">Sınıf Seçin</option>';
-
-    classes.forEach(c => {
-        const option = document.createElement('option');
-        option.value = c.id;
-        option.textContent = c.name;
-        classSelect.appendChild(option);
-
-        const attendanceOption = document.createElement('option');
-        attendanceOption.value = c.id;
-        attendanceOption.textContent = c.name;
-        attendanceClassSelect.appendChild(attendanceOption);
-    });
+    populateSelect('classSelect', classes);
+    populateSelect('attendanceClassSelect', classes);
     loadStudentsList();
 }
 
-// Sınıf oluştur
-function createClass() {
-    const className = document.getElementById('className').value;
-    if (className) {
-        const newClass = {
-            id: Date.now(),
-            name: className,
-            students: []
-        };
-        classes.push(newClass);
-        localStorage.setItem('classes', JSON.stringify(classes));
-        alert(`${className} sınıfı oluşturuldu.`);
-        updateClassSelect();
-    } else {
-        alert("Sınıf adı boş olamaz.");
-    }
-}
-
-// Öğrenci ekleme
+// Öğrenci Ekleme
 function addStudent() {
-    const studentName = document.getElementById('studentName').value;
-    const classId = document.getElementById('classSelect').value;
+    const studentName = getInputValue('studentName');
+    const classId = getSelectValue('classSelect');
 
-    if (studentName && classId) {
-        const student = { name: studentName, id: Date.now(), classId };
-        const selectedClass = classes.find(c => c.id == classId);
-        selectedClass.students.push(student);
-        students.push(student);
-        localStorage.setItem('students', JSON.stringify(students));
-        localStorage.setItem('classes', JSON.stringify(classes));
-
-        alert(`${studentName} sınıfına eklendi.`);
-        document.getElementById('studentName').value = '';
-        loadStudentsList();
-    } else {
+    if (!studentName || !classId) {
         alert("Öğrenci adı ve sınıf seçimi yapmalısınız.");
+        return;
     }
-}
 
-// Öğrencileri listele
-function loadStudentsList() {
-    const studentList = document.getElementById('studentList');
-    studentList.innerHTML = ''; // Mevcut listeyi temizle
+    const newStudent = { id: Date.now(), name: studentName, classId };
+    students.push(newStudent);
 
-    students.forEach(student => {
-        const listItem = document.createElement('li');
-        const studentClass = classes.find(c => c.id == student.classId);
-        listItem.innerHTML = `${student.name} (${studentClass.name}) <button onclick="removeStudent(${student.id})">Sil</button>`;
-        studentList.appendChild(listItem);
-    });
-}
-
-// Öğrenci silme
-function removeStudent(studentId) {
-    students = students.filter(student => student.id !== studentId);
-
-    classes.forEach(c => {
-        c.students = c.students.filter(student => student.id !== studentId);
-    });
+    const selectedClass = classes.find(c => c.id == classId);
+    selectedClass.students.push(newStudent);
 
     localStorage.setItem('students', JSON.stringify(students));
     localStorage.setItem('classes', JSON.stringify(classes));
 
+    alert(`${studentName}, sınıfa başarıyla eklendi.`);
+    clearInput('studentName');
     loadStudentsList();
-    alert("Öğrenci başarıyla silindi.");
 }
 
-// Yoklama al
-function loadStudentsForAttendance() {
-    const classId = document.getElementById('attendanceClassSelect').value;
-    const attendanceList = document.getElementById('attendanceList');
-    attendanceList.innerHTML = '';
+// Öğrenci Listesini Güncelleme
+function loadStudentsList() {
+    const studentList = document.getElementById('studentList');
+    if (!studentList) return;
 
-    if (classId) {
-        const selectedClass = classes.find(c => c.id == classId);
-        selectedClass.students.forEach(student => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `${student.name} <input type="checkbox" data-student-id="${student.id}">`;
-            attendanceList.appendChild(listItem);
-        });
+    studentList.innerHTML = '';
+    students.forEach(student => {
+        const studentClass = classes.find(c => c.id == student.classId);
+        const listItemText = studentClass 
+            ? `${student.name} (${studentClass.name})` 
+            : `${student.name} (Sınıf bulunamadı)`;
+
+        const listItem = document.createElement('li');
+        listItem.textContent = listItemText;
+        studentList.appendChild(listItem);
+    });
+}
+
+// Yardımcı Fonksiyonlar
+function getInputValue(id) {
+    const element = document.getElementById(id);
+    return element ? element.value.trim() : '';
+}
+
+function getSelectValue(id) {
+    const element = document.getElementById(id);
+    return element ? element.value : '';
+}
+
+function toggleVisibility(elementId, isVisible) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.display = isVisible ? 'block' : 'none';
     }
 }
 
-// Yoklama almayı kaydet
-function takeAttendance() {
-    const classId = document.getElementById('attendanceClassSelect').value;
-    const selectedClass = classes.find(c => c.id == classId);
-    const attendanceData = [];
-
-    const checkboxes = document.querySelectorAll('#attendanceList input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        const studentId = checkbox.getAttribute('data-student-id');
-        const student = students.find(s => s.id == studentId);
-        attendanceData.push({
-            studentId,
-            studentName: student.name,
-            present: checkbox.checked
-        });
-    });
-
-    const attendanceRecord = {
-        classId,
-        date: new Date().toLocaleDateString(),
-        attendanceData
-    };
-
-    attendanceRecords.push(attendanceRecord);
-    localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
-
-    alert('Yoklama başarıyla alındı.');
-    showSection('attendanceReports');
-    loadAttendanceReports();
+function clearInput(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.value = '';
+    }
 }
 
-// Yoklama raporlarını yükle
-function loadAttendanceReports() {
-    const attendanceReportsList = document.getElementById('attendanceReportsList');
-    attendanceReportsList.innerHTML = '';
+function populateSelect(selectId, data) {
+    const selectElement = document.getElementById(selectId);
+    if (!selectElement) return;
 
-    attendanceRecords.forEach(record => {
-        const reportDiv = document.createElement('div');
-        const className = classes.find(c => c.id == record.classId).name;
-        const reportHTML = `<h4>${className} - ${record.date}</h4><ul>`;
-        record.attendanceData.forEach(entry => {
-            reportHTML += `<li>${entry.studentName}: ${entry.present ? 'Var' : 'Yok'}</li>`;
-        });
-        reportHTML += '</ul>';
-        reportDiv.innerHTML = reportHTML;
-        attendanceReportsList.appendChild(reportDiv);
+    selectElement.innerHTML = '<option value="">Sınıf Seçin</option>';
+    data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        selectElement.appendChild(option);
     });
 }
