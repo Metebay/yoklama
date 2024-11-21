@@ -14,12 +14,13 @@
                 <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
                 <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
+                <li><button onclick="showSection('attendanceRecordsSection')">Yoklama Kayıtları</button></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="content">
-            <!-- Öğretmen Girişi Sayfası -->
+            <!-- Öğretmen Girişi -->
             <div id="loginPage" class="form-section">
                 <h2>Öğretmen Girişi</h2>
                 <label for="teacherUsername">Kullanıcı Adı:</label>
@@ -63,6 +64,14 @@
                     </select>
                     <ul id="attendanceList"></ul>
                     <button onclick="takeAttendance()">Yoklama Al</button>
+                </div>
+
+                <!-- Yoklama Kayıtları -->
+                <div id="attendanceRecordsSection" class="form-section" style="display: none;">
+                    <h2>Yoklama Kayıtları</h2>
+                    <div id="attendanceRecordsList">
+                        <!-- Yoklama kayıtları buraya eklenecek -->
+                    </div>
                 </div>
             </div>
         </div>
