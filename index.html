@@ -57,10 +57,12 @@
                 <!-- Yoklama Al -->
                 <div id="attendanceSection" class="form-section" style="display: none;">
                     <h2>Yoklama Al</h2>
-                    <select id="attendanceClassSelect">
+                    <label for="attendanceClassSelect">Sınıf Seçin:</label>
+                    <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
                         <option value="">Sınıf Seçin</option>
                     </select>
-                    <ul id="studentList"></ul>
+                    <ul id="attendanceList"></ul>
+                    <button onclick="takeAttendance()">Yoklama Al</button>
                 </div>
             </div>
         </div>
