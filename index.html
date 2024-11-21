@@ -14,13 +14,14 @@
                 <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
                 <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
                 <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
-                <li><button onclick="showSection('attendanceRecordsSection')">Yoklama Kayıtları</button></li>
+                <li><button onclick="showSection('attendanceReports')">Yoklama Raporları</button></li>
+                <li><button onclick="showSection('scoreSection')">Başarı Puanı</button></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="content">
-            <!-- Öğretmen Girişi -->
+            <!-- Öğretmen Girişi Sayfası -->
             <div id="loginPage" class="form-section">
                 <h2>Öğretmen Girişi</h2>
                 <label for="teacherUsername">Kullanıcı Adı:</label>
@@ -34,8 +35,7 @@
             <!-- Öğretmen Paneli -->
             <div id="teacherPanel" style="display: none;">
                 <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
-
-                <!-- Sınıf Oluştur -->
+                
                 <div id="classSection" class="form-section" style="display: none;">
                     <h2>Sınıf Oluştur</h2>
                     <label for="className">Sınıf Adı:</label>
@@ -43,7 +43,6 @@
                     <button onclick="createClass()">Sınıf Oluştur</button>
                 </div>
 
-                <!-- Öğrenci Ekle -->
                 <div id="studentSection" class="form-section" style="display: none;">
                     <h2>Öğrenci Ekle</h2>
                     <label for="studentName">Öğrenci Adı:</label>
@@ -53,12 +52,11 @@
                         <option value="">Sınıf Seçin</option>
                     </select>
                     <button onclick="addStudent()">Öğrenci Ekle</button>
+                    <ul id="studentList"></ul> <!-- Öğrenci Listesi -->
                 </div>
 
-                <!-- Yoklama Al -->
                 <div id="attendanceSection" class="form-section" style="display: none;">
                     <h2>Yoklama Al</h2>
-                    <label for="attendanceClassSelect">Sınıf Seçin:</label>
                     <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
                         <option value="">Sınıf Seçin</option>
                     </select>
@@ -66,12 +64,15 @@
                     <button onclick="takeAttendance()">Yoklama Al</button>
                 </div>
 
-                <!-- Yoklama Kayıtları -->
-                <div id="attendanceRecordsSection" class="form-section" style="display: none;">
+                <div id="attendanceReports" class="form-section" style="display: none;">
                     <h2>Yoklama Kayıtları</h2>
-                    <div id="attendanceRecordsList">
-                        <!-- Yoklama kayıtları buraya eklenecek -->
-                    </div>
+                    <div id="attendanceRecordsList"></div>
+                </div>
+
+                <div id="scoreSection" class="form-section" style="display: none;">
+                    <h2>Başarı Puanı Sistemi</h2>
+                    <input type="number" id="studentScore" placeholder="Başarı Puanı Girin">
+                    <button onclick="addStudentScore()">Puan Ekle</button>
                 </div>
             </div>
         </div>
