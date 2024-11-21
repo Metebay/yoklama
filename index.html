@@ -3,60 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yoklama Sistemi</title>
+    <title>Okul Öğrenci Kaydı ve Yoklama Sistemi</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Öğretmen Girişi Sayfası -->
-    <div id="loginPage">
-        <h2>Öğretmen Girişi</h2>
-        <form id="loginForm">
-            <input type="text" id="teacherUsername" placeholder="Kullanıcı Adı" required>
-            <input type="password" id="teacherPassword" placeholder="Şifre girin" required>
-            <button type="button" onclick="teacherLogin()">Giriş Yap</button>
-        </form>
-        <div id="loginError"></div>
-    </div>
-
-    <!-- Öğretmen Paneli ve Sidebar -->
-    <div id="teacherPanel" style="display: none;">
-        <div id="sidebar" style="display: block;">
-            <button onclick="showSection('addClass')">Sınıf Ekle</button>
-            <button onclick="showSection('addStudent')">Öğrenci Ekle</button>
-            <button onclick="showSection('takeAttendance')">Yoklama Al</button>
-            <button onclick="showSection('attendanceReports')">Yoklama Raporları</button>
-        </div>
-        
-        <!-- Sınıf Ekleme -->
-        <div id="addClass" class="form-section" style="display: none;">
-            <h3>Sınıf Ekle</h3>
-            <input type="text" id="className" placeholder="Sınıf Adı" required>
-            <button type="button" onclick="createClass()">Sınıf Oluştur</button>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar" style="display: none;">
+            <ul>
+                <li><button onclick="showSection('classSection')">Sınıf Oluştur</button></li>
+                <li><button onclick="showSection('studentSection')">Öğrenci Ekle</button></li>
+                <li><button onclick="showSection('attendanceSection')">Yoklama Al</button></li>
+            </ul>
         </div>
 
-        <!-- Öğrenci Ekleme -->
-        <div id="addStudent" class="form-section" style="display: none;">
-            <h3>Öğrenci Ekle</h3>
-            <input type="text" id="studentName" placeholder="Öğrenci Adı" required>
-            <select id="classSelect">
-                <option value="">Sınıf Seçin</option>
-            </select>
-            <button type="button" onclick="addStudent()">Öğrenci Ekle</button>
-        </div>
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Öğretmen Girişi Sayfası -->
+            <div id="loginPage" class="form-section">
+                <h2>Öğretmen Girişi</h2>
+                <label for="teacherUsername">Kullanıcı Adı:</label>
+                <input type="text" id="teacherUsername" placeholder="Kullanıcı adı girin">
+                <label for="teacherPassword">Şifre:</label>
+                <input type="password" id="teacherPassword" placeholder="Şifre girin">
+                <button onclick="teacherLogin()">Giriş Yap</button>
+                <p id="loginError" style="color: red;"></p>
+            </div>
 
-        <!-- Yoklama Al -->
-        <div id="takeAttendance" class="form-section" style="display: none;">
-            <h3>Yoklama Al</h3>
-            <select id="attendanceClassSelect" onchange="loadStudentsForAttendance()">
-                <option value="">Sınıf Seçin</option>
-            </select>
-            <ul id="attendanceList"></ul>
-            <button type="button" onclick="takeAttendance()">Yoklama Kaydet</button>
-        </div>
+            <!-- Öğretmen Paneli -->
+            <div id="teacherPanel" style="display: none;">
+                <h1>Okul Öğrenci Kaydı ve Yoklama Sistemi</h1>
 
-        <!-- Yoklama Raporları -->
-        <div id="attendanceReports" class="form-section" style="display: none;">
-            <h3>Yoklama Raporları</h3>
-            <div id="attendanceReportsList"></div>
+                <!-- Sınıf Oluştur -->
+                <div id="classSection" class="form-section" style="display: none;">
+                    <h2>Sınıf Oluştur</h2>
+                    <label for="className">Sınıf Adı:</label>
+                    <input type="text" id="className" placeholder="Sınıf adı girin">
+                    <button onclick="createClass()">Sınıf Oluştur</button>
+                </div>
+
+                <!-- Öğrenci Ekle -->
+                <div id="studentSection" class="form-section" style="display: none;">
+                    <h2>Öğrenci Ekle</h2>
+                    <label for="studentName">Öğrenci Adı:</label>
+                    <input type="text" id="studentName" placeholder="Öğrenci adı girin">
+                    <label for="classSelect">Sınıf Seçin:</label>
+                    <select id="classSelect">
+                        <option value="">Sınıf Seçin</option>
+                    </select>
+                    <button onclick="addStudent()">Öğrenci Ekle</button>
+                </div>
+
+                <!-- Yoklama Al -->
+                <div id="attendanceSection" class="form-section" style="display: none;">
+                    <h2>Yoklama Al</h2>
+                    <select id="attendanceClassSelect">
+                        <option value="">Sınıf Seçin</option>
+                    </select>
+                    <ul id="studentList"></ul>
+                </div>
+            </div>
         </div>
     </div>
 
